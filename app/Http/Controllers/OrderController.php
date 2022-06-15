@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Dish;
 use App\Models\Order;
+use App\Models\Table;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -14,73 +16,50 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::all();
-        return view('kitchen.order',compact('orders'));
+        $dishes = Dish::orderBy('id','desc')->get();
+        $tables = Table::all();
+
+        $rawstatus = config('res.order_status');
+        $status = array_flip($rawstatus);
+        // dd($status);
+        $orders = Order::where('status',4)->get();
+        return view('order_form',compact('dishes','tables','orders','status'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+
+    public function submit(Request $request)
     {
-        //
+        //dd(array_filter($request->except('_token'))); // array filter => array value null ဖြစ်တာတွေကို remove လုပ်ပေး။ // except('_token') => remove form token key
+
+        $data = array_filter($request->except('_token','table'));
+        $order_id = rand();
+
+        foreach($data as $key=>$value){
+            if($value > 1){ // qty ၂ ဆို database ထဲ ၂ ကြောင်း၀◌င်။
+                for($i = 0; $i < $value; $i++){
+                    $this->saveOrder($order_id,$key,$request);
+                }
+            }else{
+                $this->saveOrder($order_id,$key,$request);
+            }
+        }
+        return redirect('/')->with('message','Order Submitted');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    public function saveOrder($order_id,$dish_id,$request){
+        $order = new Order();
+        $order->order_id = $order_id;
+        $order->dish_id = $dish_id;
+        $order->table_id = $request->table;
+        $order->status = config('res.order_status.new');// config/res.php
+
+        $order->save();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+    public function serve(Order $order){
+        $order->status = config('res.order_status.done');
+        $order->save();
+        return redirect('/')->with('message','Order serve to customer.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

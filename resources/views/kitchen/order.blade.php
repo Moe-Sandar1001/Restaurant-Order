@@ -52,31 +52,44 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">DataTable with default features</h3>
+                <h3 class="card-title">Order Listings</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
+
+                @if (session('message'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>{{ session('message') }}</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                @endif
+
                 <table id="example1" class="table table-bordered table-striped">
                   <thead>
                   <tr>
-                    <th>Rendering engine</th>
-                    <th>Browser</th>
-                    <th>Platform(s)</th>
-                    <th>Engine version</th>
-                    <th>CSS grade</th>
+                    <th>Dish Name</th>
+                    <th>Table No</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                   </thead>
                   <tbody>
+                  @foreach ($orders as $order)
                     <tr>
-                      <td>Trident</td>
-                      <td>Internet
-                        Explorer 4.0
+                      <td>{{$order->dish->name}}</td>
+                      <td>{{$order->table_id}}</td>
+                      <td>{{$status[$order->status]}}</td>
+                      <td>
+                          <div>
+                              <a href="/order/{{$order->id}}/approve" class="btn btn-warning">Approve</a>
+                              <a href="/order/{{$order->id}}/cancel" class="btn btn-danger">Cancel</a>
+                              <a href="/order/{{$order->id}}/ready" class="btn btn-success">Ready</a>
+                          </div>
                       </td>
-                      <td>Win 95+</td>
-                      <td> 4</td>
-                      <td>X</td>
                     </tr>
-                
+                  @endforeach
                   </tbody>
                 </table>
               </div>
@@ -90,3 +103,4 @@
 
   </div>
 @endsection
+

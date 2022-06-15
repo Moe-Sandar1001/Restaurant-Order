@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Order;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,4 +15,6 @@ class Dish extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    
 }
