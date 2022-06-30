@@ -129,7 +129,7 @@ class DishesController extends Controller
         $status = array_flip($rawstatus);
         // dd($status);
 
-        $orders = Order::whereIn('status',[1,2])->get();
+        $orders = Order::whereIn('status',[1,2])->orderBy('id', 'ASC')->get();
         return view('kitchen.order',compact('orders','status'));
     }
 

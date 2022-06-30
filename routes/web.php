@@ -41,7 +41,4 @@ Auth::routes([
 
 // Route::get('/home', [App\Http\Controllers\OrderController::class, 'index'])->name('home');
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 
